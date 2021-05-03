@@ -1,6 +1,7 @@
 <template>
   <div>
     <img alt="Kinzo" src="../assets/kinzo.png" />
+    <audio id="audio" src="../assets/kinzo.wav" controls/>
     <VueRecordAudio @result="onResult" />
     <!--
         <audio-recorder
@@ -30,12 +31,20 @@ export default {
     onResult(data) {
       const path = "http://localhost:5000/compare";
       const form = new FormData();
-      form.append('source', data);
-      form.append('compare', data);
-      axios.post(path, form).then(() => {
-          console.debug("did it");
-      });
-      console.debug(data);
+
+      var aud = document.getElementById('audio');
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', aud.src);
+      xhr.responseType = 'blob';
+      xhr.onload = () => {
+        form.append('source', xhr.response);
+        form.append('compare', data);
+        axios.post(path, form).then(() => {
+            console.debug("did it");
+        });
+      }
+      xhr.send();
+      // form.append('source', data);
     },
   },
   props: {},
