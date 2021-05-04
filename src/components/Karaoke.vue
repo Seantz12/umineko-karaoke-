@@ -2,8 +2,9 @@
   <div>
     <img alt="Kinzo" src="../assets/kinzo.png" />
     <audio id="audio" src="../assets/kinzo.wav" controls/>
-    <VueRecordAudio @result="onResult" />
+    <Recorder @audioStart="startedRecording" @audioDone="onResult"/>
     <!--
+        <VueRecordAudio @result="onResult" />
         <audio-recorder
         upload-url="some url"
         :attempts="3"
@@ -20,13 +21,16 @@
 <script>
 import axios from 'axios';
 import FormData from 'form-data';
+import Recorder from './Recorder.vue';
 
 export default {
   name: "Karaoke",
-  components: {},
+  components: {
+    Recorder
+  },
   methods: {
-    callback(data) {
-      console.debug(data);
+    startedRecording() {
+
     },
     onResult(data) {
       const path = "http://localhost:5000/compare";
