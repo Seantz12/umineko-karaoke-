@@ -14,7 +14,9 @@
     "FormData": "^0.10.1",
     "pizzicato": "^0.6.4",
     "vue": "^2.6.11",
-    "vue-audio-recorder": "^3.0.1"
+    "vue-audio-recorder": "^3.0.1",
+    "vue-progressbar": "^0.7.5",
+    "vue-spinner": "^1.0.4"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
