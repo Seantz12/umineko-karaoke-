@@ -1,26 +1,21 @@
 <template>
-  <div>
+  <div class="container">
     <img alt="Kinzo" src="../assets/kinzo.png" />
     <audio id="audio" src="../assets/kinzo.wav" controls/>
-    <Recorder @audioDone="onResult"/>
+    <div v-if="!results" class="recorder">
+      <Recorder @audioDone="onResult" :length="this.audioLength" />
+    </div>
+    <div v-else> 
+       Your score was: {{score}}%
+       <button @click="results = false"> reset </button>
+    </div>
     <div v-if="processing" class="loader"></div>
-    <!--
-        <VueRecordAudio @result="onResult" />
-        <audio-recorder
-        upload-url="some url"
-        :attempts="3"
-        :time="2"
-        :before-recording="callback"
-        :after-recording="callback"
-        :before-upload="callback"
-        :successful-upload="callback"
-        :failed-upload="callback"/>
-        -->
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import getBlobDuration from 'get-blob-duration';
 import FormData from 'form-data';
 import Recorder from './Recorder.vue';
 
@@ -31,29 +26,42 @@ export default {
   },
   data() {
     return {
-      processing: false
+      processing: false,
+      results: false,
+      score: 0,
+      audioData: null,
+      audioLength: 0
     }
   },
-  methods: {
-    onResult(data) {
-      this.processing = true;
-      const path = "http://localhost:5000/compare";
-      const form = new FormData();
-
+  mounted() {
       var aud = document.getElementById('audio');
       var xhr = new XMLHttpRequest();
       xhr.open('GET', aud.src);
       xhr.responseType = 'blob';
       xhr.onload = () => {
-        form.append('source', xhr.response);
-        form.append('compare', data);
-        axios.post(path, form).then(() => {
-          this.processing = false;
-          console.debug("did it");
+        this.audioData = xhr.response;
+        getBlobDuration(xhr.response).then((length) => {
+          this.audioLength = Math.round(length * 1000); // convert to ms
+          console.debug(length);
         });
       }
       xhr.send();
-      // form.append('source', data);
+  },
+  methods: {
+    onResult(data) {
+      this.processing = true;
+      //const path = "https://karaoke-scorer.herokuapp.com/compare";
+      const path = "http://localhost:5000/compare";
+      const form = new FormData();
+      form.append('source', this.audioData);
+      form.append('compare', data);
+      form.append('threshold', 10);
+      axios.post(path, form).then((response) => {
+        this.processing = false;
+        this.results = true;
+        this.score = response.data.score;
+        console.debug(response);
+      });
     },
   },
   props: {},
@@ -61,6 +69,16 @@ export default {
 </script>
 
 <style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.recorder {
+  width: 100%;
+}
+
 /* styling taken from w3schools loader page */
 .loader {
   margin: auto;

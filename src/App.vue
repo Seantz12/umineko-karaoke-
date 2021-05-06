@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <h1> Can you call for Beatrice as well as Kinzo can? </h1>
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <Karaoke/>
   </div>
 </template>

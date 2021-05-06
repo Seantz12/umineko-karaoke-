@@ -1,8 +1,10 @@
 <template>
   <div id="record">
-      <button id="record-button" v-on:click="audioRecording">press me</button>
+      <button id="record-button" v-on:click="audioRecording">Start Recording</button>
+      <p> Recording Bar </p>
       <div id="progress">
-        <div id="bar"></div>
+        <div id="bar">
+        </div>
       </div>
   </div>
 </template>
@@ -11,11 +13,21 @@
 export default {
   name: "Recorder",
   components: {},
+  props: {
+    length: {
+      type: Number,
+    }
+  },
+  data() {
+    return {
+      time: "0/0"
+    }
+  },
   methods: {
       audioRecording() {
         this.$emit('audioStart');
         var progressBar = document.getElementById("bar");
-        var progress = 1;
+        var progress = 0;
         navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
             const mediaRecorder = new MediaRecorder(stream);
@@ -34,17 +46,17 @@ export default {
 
             var update = setInterval(() => {
               progress += 10;
-              progressBar.style.width = (progress / 4000) * 100 + "%";
+              progressBar.style.width = (progress / this.length) * 100 + "%";
             }, 10)
 
             setTimeout(() => {
               mediaRecorder.stop();
               clearInterval(update);
-            }, 4000);
+              progressBar.style.width = "0%";
+            }, this.length);
         });
       }
   },
-  props: {},
 };
 </script>
 

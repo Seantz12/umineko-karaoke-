@@ -12,6 +12,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "FormData": "^0.10.1",
+    "get-blob-duration": "^1.2.0",
     "pizzicato": "^0.6.4",
     "vue": "^2.6.11",
     "vue-audio-recorder": "^3.0.1",
